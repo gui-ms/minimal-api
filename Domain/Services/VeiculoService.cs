@@ -12,6 +12,10 @@ public class VeiculoServico : IVeiculoServico
 {
     private readonly DbContexto _contexto;
 
+    public VeiculoServico(DbContexto contexto){
+        _contexto = contexto;
+    }
+
     public void Apagar(Veiculo veiculo)
     {
         _contexto.Veiculos.Remove(veiculo);
@@ -35,7 +39,7 @@ public class VeiculoServico : IVeiculoServico
         _contexto.SaveChanges();
     }
 
-    public List<Veiculo> Todos(int pagina = 1, string? marca = null, string? nome = null)
+    public List<Veiculo> Todos(int? pagina = 1, string? marca = null, string? nome = null)
     {
         var query = _contexto.Veiculos.AsQueryable();
         if(!string.IsNullOrEmpty(nome)){
@@ -44,7 +48,9 @@ public class VeiculoServico : IVeiculoServico
 
         int itensPorPagina = 10;
 
-        query = query.Skip((pagina -1) * itensPorPagina).Take(itensPorPagina);
+        if(pagina != null){
+            query = query.Skip(((int) pagina -1) * itensPorPagina).Take(itensPorPagina);
+        }
 
         return query.ToList();
     }
